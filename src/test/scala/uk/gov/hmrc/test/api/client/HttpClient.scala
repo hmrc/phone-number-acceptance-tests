@@ -19,7 +19,7 @@ package uk.gov.hmrc.test.api.client
 import akka.actor.ActorSystem
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.StandaloneWSRequest
-import play.api.libs.ws.ahc.StandaloneAhcWSClient
+import play.api.libs.ws.ahc.{AhcCurlRequestLogger, StandaloneAhcWSClient}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +38,7 @@ trait HttpClient {
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
     wsClient
       .url(url)
+      .withRequestFilter(AhcCurlRequestLogger())
       .withHttpHeaders(headers: _*)
       .post(bodyAsJson)
 
