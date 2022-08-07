@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.models
+package uk.gov.hmrc.test.api.models.validate
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
-case class IndividualsLinks(name: String, href: String, title: String)
+case class PhoneNumberResponse(phoneNumber: String, phoneNumberType: String)
 
-object IndividualsLinks {
-  implicit val userJsonFormat: OFormat[IndividualsLinks] = Json.format[IndividualsLinks]
+object PhoneNumberResponse {
+  implicit val formats = Json.format[PhoneNumberResponse]
 }
+
+

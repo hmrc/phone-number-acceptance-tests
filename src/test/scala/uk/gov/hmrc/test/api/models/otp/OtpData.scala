@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.models
+package uk.gov.hmrc.test.api.models.otp
 
 import play.api.libs.json.Json
 
-case class PhoneNumberResponse(phoneNumber: String, phoneNumberType: String)
+case class OtpData(phoneNumber: String, otp: String)
 
-object PhoneNumberResponse {
-  implicit val formats = Json.format[PhoneNumberResponse]
+object OtpData {
+
+  implicit val reads = Json.reads[OtpData]
+
 }
-
-case class PhoneNumberErrorResponse(code: String, message: String)
-
-object PhoneNumberErrorResponse {
-  implicit val formats = Json.format[PhoneNumberErrorResponse]
-}
-

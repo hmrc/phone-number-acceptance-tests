@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.specs.validation
+package uk.gov.hmrc.test.api.models.verify
 
-import uk.gov.hmrc.test.api.specs.BaseSpec
+import play.api.libs.json.Json
 
-class VerificationSpec extends BaseSpec {
+case class IndeterminateResponse(status: String, message: String)
 
+object IndeterminateResponse {
+  implicit val formats = Json.format[IndeterminateResponse]
 }

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.models
+package uk.gov.hmrc.test.api.helpers.common
 
-import play.api.libs.json.{Json, OFormat}
+trait JsonRequests {
+  val headers = ("content-type" -> "application/json")
+  val pathPrefix = "/customer-insight-platform/phone-number"
 
-case class User(firstName: String, lastName: String, nino: String, dateOfBirth: String)
+  val phoneNumberRequest = (phoneNumber: String) => s"""{"phoneNumber" : "$phoneNumber" }"""
 
-object User {
-  implicit val userJsonFormat: OFormat[User] = Json.format[User]
-  val ninoUser: User                         = User("Luke", "Wood", "EG724113D", "1960-04-06")
+  val otpRequest = (phoneNumber: String, otp: String) => s"""{
+                                               |  "phoneNumber": "$phoneNumber",
+                                               |  "otp": "$otp"
+                                               |}""".stripMargin
 }

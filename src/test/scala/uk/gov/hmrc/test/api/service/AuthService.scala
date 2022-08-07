@@ -23,6 +23,7 @@ import uk.gov.hmrc.test.api.conf.TestConfiguration
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
+//TODO: will probably modify and use this when we add auth to our services
 class AuthService extends HttpClient {
 
   val host: String        = TestConfiguration.url("auth")

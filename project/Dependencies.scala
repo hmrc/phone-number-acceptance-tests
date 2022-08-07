@@ -9,5 +9,6 @@ object Dependencies {
     "com.typesafe.play"   %% "play-ahc-ws-standalone"  % "2.1.2"   % Test,
     "com.typesafe.play"   %% "play-ws-standalone-json" % "2.1.2"   % Test,
     "org.slf4j"            % "slf4j-simple"            % "1.7.25"  % Test,
+    "uk.gov.hmrc.mongo"   %% "hmrc-mongo-test-play-28" % "0.68.0"  % Test
   )
 }

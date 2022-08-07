@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.helpers
+package uk.gov.hmrc.test.api.models.verify
 
-import org.scalatest.Assertions.fail
-import play.api.libs.ws.StandaloneWSRequest
-import uk.gov.hmrc.test.api.service.AuthService
+import play.api.libs.json.Json
 
-class AuthHelper {
+case class VerifyResponse(notificationId: String)
 
-  val authAPI: AuthService = new AuthService
-
-  def getAuthBearerToken: String = {
-    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = authAPI.postLogin
-    authServiceRequestResponse.header("Authorization").getOrElse(fail("Could not obtain auth bearer token"))
-  }
+object VerifyResponse {
+  implicit val formats = Json.format[VerifyResponse]
 }

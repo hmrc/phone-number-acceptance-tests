@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.helpers
+package uk.gov.hmrc.test.api.helpers.common
 
-import play.api.libs.json.Json
+import org.scalatest.Assertions.fail
 import play.api.libs.ws.StandaloneWSRequest
-import uk.gov.hmrc.test.api.models.User
-import uk.gov.hmrc.test.api.service.IndividualsMatchingService
+import uk.gov.hmrc.test.api.service.AuthService
 
-class IndividualsMatchingHelper {
+//TODO: will probably modify and use this when we add auth to our services
+class AuthHelper {
 
-  val individualsMatchingServiceAPI: IndividualsMatchingService = new IndividualsMatchingService
+  val authAPI: AuthService = new AuthService
 
-  def getIndividualByMatchId(authBearerToken: String, individualsMatchId: String): User = {
-    val individualsMatchGetResponse: StandaloneWSRequest#Self#Response =
-      individualsMatchingServiceAPI.getIndividualByMatchId(authBearerToken, individualsMatchId)
-    (Json.parse(individualsMatchGetResponse.body) \ "individual").as[User]
+  def getAuthBearerToken: String = {
+    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = authAPI.postLogin
+    authServiceRequestResponse.header("Authorization").getOrElse(fail("Could not obtain auth bearer token"))
   }
-
 }
