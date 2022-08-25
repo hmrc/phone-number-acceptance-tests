@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.specs
+package uk.gov.hmrc.test.api.helpers.validate
 
-import org.scalatest._
-import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.should.Matchers
-import uk.gov.hmrc.test.api.helpers.common.{AuthHelper, OtpHelper}
+import uk.gov.hmrc.test.api.models.common.PhoneNumberErrorResponse
+import uk.gov.hmrc.test.api.models.validate.PhoneNumberResponse
 
-trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with BeforeAndAfterAll with Matchers {
-  val authHelper = new AuthHelper
-  val otpHelper = new OtpHelper
+object ValidationResponses {
+
+  var phoneNumberResponse: PhoneNumberResponse = _
+  var phoneNumberErrorResponse: PhoneNumberErrorResponse = _
+
 }
