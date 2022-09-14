@@ -32,7 +32,7 @@ import scala.util.Try
 
 object VerificationRequests extends HttpClient with JsonRequests {
 
-  private val urlVerification = TestConfiguration.url("cip-phone-number-verification")
+  private val urlVerification = TestConfiguration.url("cip-phone-number")
 
   def callVerifyEndpoint(jsonBody: String, headers: (String, String) = headers): Future[JsValue] =
     post(s"$urlVerification$pathPrefix/verify", jsonBody, headers)

@@ -28,6 +28,7 @@ import uk.gov.hmrc.test.api.models.validate.PhoneNumberResponse
 import scala.concurrent.Future
 import scala.util.Try
 
+//TODO: temporary - remove this
 object ValidationRequests extends HttpClient with JsonRequests {
 
   private val urlValidation = TestConfiguration.url("cip-phone-number-validation")
