@@ -18,8 +18,9 @@ package uk.gov.hmrc.test.api.client
 
 import akka.actor.ActorSystem
 import play.api.libs.ws.DefaultBodyWritables._
-import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.{AhcCurlRequestLogger, StandaloneAhcWSClient}
+import play.api.libs.ws.{DefaultWSProxyServer, StandaloneWSRequest}
+import uk.gov.hmrc.test.api.conf.TestConfiguration
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,17 +30,23 @@ trait HttpClient {
   val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
   implicit val ec: ExecutionContext = ExecutionContext.global
 
-  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
-    wsClient
-      .url(url)
+  private def req(url: String, headers: (String, String)*) = {
+    val req = wsClient.url(url)
       .withRequestFilter(AhcCurlRequestLogger())
       .withHttpHeaders(headers: _*)
-      .get
+
+    if (TestConfiguration.useZap) {
+      val PROXY_PORT = 11000
+      req.withProxyServer(DefaultWSProxyServer("localhost", PROXY_PORT))
+    } else {
+      req
+    }
+  }
+
+  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] = {
+    req(url, headers: _*).get
+  }
 
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
-    wsClient
-      .url(url)
-      .withRequestFilter(AhcCurlRequestLogger())
-      .withHttpHeaders(headers: _*)
-      .post(bodyAsJson)
+    req(url, headers: _*).post(bodyAsJson)
 }

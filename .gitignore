@@ -26,3 +26,5 @@ src_managed/
 project/project
 project/target
 *.bsp
+
+dast-config-manager/
