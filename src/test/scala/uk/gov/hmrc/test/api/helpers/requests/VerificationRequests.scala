@@ -32,7 +32,7 @@ import scala.util.Try
 
 object VerificationRequests extends HttpClient with JsonRequests {
 
-  private val urlVerification = TestConfiguration.url("cip-phone-number-verification")
+  private val urlVerification = TestConfiguration.url("cip-phone-number")
 
   def callVerifyEndpoint(jsonBody: String, headers: (String, String) = headers): Future[JsValue] =
     post(s"$urlVerification$pathPrefix/verify", jsonBody, headers)
@@ -52,7 +52,9 @@ object VerificationRequests extends HttpClient with JsonRequests {
           phoneNumberErrorResponse = jsonResp.as[PhoneNumberErrorResponse]
           jsonResp
       } recoverWith {
-      case _ => Future.failed(new Exception)
+      case err =>
+        println(err)
+        Future.failed(new Exception(err))
     }
 
   def callVerifyOtpEndpoint(jsonBody: String, headers: (String, String) = headers): Future[JsValue] =
@@ -69,7 +71,9 @@ object VerificationRequests extends HttpClient with JsonRequests {
           phoneNumberErrorResponse = jsonResp.as[PhoneNumberErrorResponse]
           jsonResp
       } recoverWith {
-      case _ => Future.failed(new Exception)
+      case err =>
+        println(err)
+        Future.failed(new Exception(err))
     }
 
   def isIndeterminateResponse(jsValue: JsValue): Boolean = {

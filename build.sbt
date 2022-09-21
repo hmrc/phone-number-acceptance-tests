@@ -7,4 +7,3 @@ lazy val testSuite = (project in file("."))
     scalacOptions ++= Seq("-feature"),
     libraryDependencies ++= Dependencies.test,
   )
-

@@ -27,3 +27,15 @@ The tests default to the `local` environment.  For a complete list of supported 
 
 To run the tests against an environment set the corresponding `host` environment property as specified under
  `<env>.host.services` in the [application.conf](src/test/resources/application.conf). 
+
+## Running ZAP specs - on a developer machine
+
+You can use the `run_zap_tests_local.sh` script to build a local ZAP container and run ZAP tests locally.  
+This will clone a copy of the dast-config-manager repository in this projects parent directory; it will require `make` to be available on your machine.  
+https://github.com/hmrc/dast-config-manager/#running-zap-locally has more information about how the zap container is built.
+
+`./run_zap_tests_local.sh`
+
+***Note:** Results of your ZAP run will not be placed in your target directory until you have run `./run-local-zap-container.sh --stop`*
+
+***Note:** `./run-local-zap-container.sh` should **NOT** be used when running in a CI environment!*

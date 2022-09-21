@@ -20,8 +20,7 @@ import org.scalatest.concurrent.ScalaFutures.convertScalaFuture
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import play.api.libs.json.{JsNull, JsValue}
-import uk.gov.hmrc.test.api.helpers.requests.ValidationRequests.otpRequest
-import uk.gov.hmrc.test.api.helpers.requests.VerificationRequests.{callVerifyEndpoint, callVerifyOtpEndpoint, phoneNumberRequest}
+import uk.gov.hmrc.test.api.helpers.requests.VerificationRequests.{callVerifyEndpoint, callVerifyOtpEndpoint, otpRequest, phoneNumberRequest}
 import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponse}
 import uk.gov.hmrc.test.api.helpers.verifyOtp.OtpVerificationResponses.otpResponse
 import uk.gov.hmrc.test.api.models.otp.OtpData
