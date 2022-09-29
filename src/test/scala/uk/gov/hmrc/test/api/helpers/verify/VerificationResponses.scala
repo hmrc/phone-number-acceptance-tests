@@ -22,6 +22,7 @@ import uk.gov.hmrc.test.api.models.verify.{IndeterminateResponse, VerifyResponse
 object VerificationResponses {
 
   var verifyResponse: VerifyResponse = _
+  var verifyResponseHeaders: Map[String, Seq[String]] = _
   var phoneNumberErrorResponse: PhoneNumberErrorResponse = _
   var indeterminateResponse: IndeterminateResponse = _
 
