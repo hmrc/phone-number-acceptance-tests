@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.test.api.helpers.requests
 
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.test.api.client.HttpClient
 import uk.gov.hmrc.test.api.conf.TestConfiguration
 import uk.gov.hmrc.test.api.helpers.common.JsonRequests
-import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponse}
+import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponseHeaders}
 import uk.gov.hmrc.test.api.helpers.verifyOtp.OtpVerificationResponses.otpResponse
 import uk.gov.hmrc.test.api.models.common.PhoneNumberErrorResponse
-import uk.gov.hmrc.test.api.models.verify.{IndeterminateResponse, VerifyResponse}
 import uk.gov.hmrc.test.api.models.otp.OtpResponse
+import uk.gov.hmrc.test.api.models.verify.IndeterminateResponse
 
 import scala.concurrent.Future
 import scala.util.Try
@@ -34,22 +34,23 @@ object VerificationRequests extends HttpClient with JsonRequests {
 
   private val urlVerification = TestConfiguration.url("cip-phone-number")
 
-  def callVerifyEndpoint(jsonBody: String, headers: (String, String) = headers): Future[JsValue] =
+  def callVerifyEndpoint(jsonBody: String, headers: (String, String) = headers): Future[Any] =
     post(s"$urlVerification$pathPrefix/verify", jsonBody, headers)
       .collect {
         case r: StandaloneWSResponse if r.status >= 200 && r.status < 300 =>
-          val jsonResp: JsValue = Json.parse(r.body)
+          val body = r.body
           Try {
-            if (isIndeterminateResponse(jsonResp)) {
-              indeterminateResponse = jsonResp.as[IndeterminateResponse]
+            if (isIndeterminateResponse(body)) {
+              indeterminateResponse = Json.parse(body).as[IndeterminateResponse]
             } else {
-              verifyResponse = jsonResp.as[VerifyResponse]
+              verifyResponseHeaders = r.headers
             }
           } recover { case _: Exception => println("could not parse phone number") }
-          jsonResp
         case r: StandaloneWSResponse =>
           val jsonResp = Json.parse(r.body)
-          phoneNumberErrorResponse = jsonResp.as[PhoneNumberErrorResponse]
+          Try {
+            phoneNumberErrorResponse = jsonResp.as[PhoneNumberErrorResponse]
+          } recover { case _: Exception => println("could not parse phone number error response") }
           jsonResp
       } recoverWith {
       case err =>
@@ -68,7 +69,9 @@ object VerificationRequests extends HttpClient with JsonRequests {
           jsonResp
         case r: StandaloneWSResponse =>
           val jsonResp = Json.parse(r.body)
-          phoneNumberErrorResponse = jsonResp.as[PhoneNumberErrorResponse]
+          Try {
+            phoneNumberErrorResponse = jsonResp.as[PhoneNumberErrorResponse]
+          } recover { case _: Exception => println("could not parse phone number error response") }
           jsonResp
       } recoverWith {
       case err =>
@@ -76,12 +79,7 @@ object VerificationRequests extends HttpClient with JsonRequests {
         Future.failed(new Exception(err))
     }
 
-  def isIndeterminateResponse(jsValue: JsValue): Boolean = {
-    val fields = jsValue.asInstanceOf[JsObject].fields
-    if (fields.size == 2 && "status".equals(fields.head._1) && "message".equals(fields(1)._1)) {
-      true
-    } else {
-      false
-    }
+  def isIndeterminateResponse(body: String): Boolean = {
+    body.contains("Indeterminate")
   }
 }

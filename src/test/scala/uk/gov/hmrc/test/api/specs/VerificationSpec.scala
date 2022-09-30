@@ -21,7 +21,7 @@ import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import play.api.libs.json.{JsNull, JsValue}
 import uk.gov.hmrc.test.api.helpers.requests.VerificationRequests.{callVerifyEndpoint, callVerifyOtpEndpoint, otpRequest, phoneNumberRequest}
-import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponse}
+import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponseHeaders}
 import uk.gov.hmrc.test.api.helpers.verifyOtp.OtpVerificationResponses.otpResponse
 import uk.gov.hmrc.test.api.models.otp.OtpData
 
@@ -52,11 +52,11 @@ class VerificationSpec extends BaseSpec {
 
       When("I validate it against the verification service")
       val jsonBody = phoneNumberRequest(phoneNumber)
-      val result: Future[JsValue] = callVerifyEndpoint(jsonBody)
+      val result: Future[Any] = callVerifyEndpoint(jsonBody)
       Await.result(result, 50 seconds) must not be JsNull
 
       Then("I should receive a notification ID")
-      verifyResponse.notificationId shouldBe a[String]
+      verifyResponseHeaders("Location").head shouldBe a[String]
 
       And("Once I receive the correct OTP on my mobile and ignore it")
 
@@ -82,11 +82,11 @@ class VerificationSpec extends BaseSpec {
 
     When("I validate it against the verification service")
     val jsonBody = phoneNumberRequest(phoneNumber)
-    val result: Future[JsValue] = callVerifyEndpoint(jsonBody)
+    val result: Future[Any] = callVerifyEndpoint(jsonBody)
     Await.result(result, 50 seconds) must not be JsNull
 
     Then("I should receive a notification ID")
-    verifyResponse.notificationId shouldBe a[String]
+    verifyResponseHeaders("Location").head shouldBe a[String]
 
     And("Once I receive the correct OTP on my mobile and ignore it")
 
@@ -114,11 +114,11 @@ class VerificationSpec extends BaseSpec {
 
       When("I verify it against the verification service")
       val jsonBody = phoneNumberRequest(phoneNumber)
-      val verifyResult: Future[JsValue] = callVerifyEndpoint(jsonBody)
+      val verifyResult: Future[Any] = callVerifyEndpoint(jsonBody)
       Await.result(verifyResult, 50 seconds) must not be JsNull
 
       Then("I should receive a notification ID")
-      verifyResponse.notificationId shouldBe a[String]
+      verifyResponseHeaders("Location").head shouldBe a[String]
 
       And("Once I receive the correct OTP on my mobile")
       // retrieve the expected Otp from the stubs repo
@@ -155,7 +155,7 @@ class VerificationSpec extends BaseSpec {
 
       When("I verify it against the verification service")
       val jsonBody = phoneNumberRequest(phoneNumber)
-      val verifyResult: Future[JsValue] = callVerifyEndpoint(jsonBody)
+      val verifyResult: Future[Any] = callVerifyEndpoint(jsonBody)
       Await.result(verifyResult, 50 seconds) must not be JsNull
 
       Then("I should receive a validation error")
@@ -179,7 +179,7 @@ class VerificationSpec extends BaseSpec {
 
       When("I verify it against the verification service")
       val jsonBody = phoneNumberRequest(phoneNumber)
-      val verifyResult: Future[JsValue] = callVerifyEndpoint(jsonBody)
+      val verifyResult: Future[Any] = callVerifyEndpoint(jsonBody)
       Await.result(verifyResult, 50 seconds) must not be JsNull
 
       Then("I should receive an indeterminate response")
