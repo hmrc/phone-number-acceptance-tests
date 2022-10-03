@@ -19,7 +19,7 @@ package uk.gov.hmrc.test.api.helpers.common
 import uk.gov.hmrc.mongo.CurrentTimestampSupport
 import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.test.api.models.passcode.PasscodeData
+import uk.gov.hmrc.test.api.models.passcode.PhoneNumberAndPasscodeData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -37,7 +37,7 @@ class PasscodeHelper extends MongoSupport {
     cacheIdType = CacheIdType.SimpleCacheId
   )
 
-  def getPasscodeForPhoneNumber(phoneNumber: String): Future[Option[PasscodeData]] = {
-    repository.get[PasscodeData](phoneNumber)(DataKey("cip-phone-number-verification"))
+  def getPasscodeForPhoneNumber(phoneNumber: String): Future[Option[PhoneNumberAndPasscodeData]] = {
+    repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("cip-phone-number-verification"))
   }
 }
