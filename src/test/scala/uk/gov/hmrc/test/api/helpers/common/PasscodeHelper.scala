@@ -19,13 +19,13 @@ package uk.gov.hmrc.test.api.helpers.common
 import uk.gov.hmrc.mongo.CurrentTimestampSupport
 import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.test.api.models.otp.OtpData
+import uk.gov.hmrc.test.api.models.passcode.PasscodeData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
-class OtpHelper extends MongoSupport {
+class PasscodeHelper extends MongoSupport {
 
   override def databaseName: String = "cip-phone-number-verification"
 
@@ -37,7 +37,7 @@ class OtpHelper extends MongoSupport {
     cacheIdType = CacheIdType.SimpleCacheId
   )
 
-  def getOtpForPhoneNumber(phoneNumber: String): Future[Option[OtpData]] = {
-    repository.get[OtpData](phoneNumber)(DataKey("cip-phone-number-verification"))
+  def getPasscodeForPhoneNumber(phoneNumber: String): Future[Option[PasscodeData]] = {
+    repository.get[PasscodeData](phoneNumber)(DataKey("cip-phone-number-verification"))
   }
 }

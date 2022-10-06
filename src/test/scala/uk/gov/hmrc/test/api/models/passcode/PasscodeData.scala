@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.models.otp
+package uk.gov.hmrc.test.api.models.passcode
 
 import play.api.libs.json.Json
 
-case class OtpResponse(status: String)
+case class PasscodeData(phoneNumber: String, passcode: String)
 
-object OtpResponse {
-  implicit val reads = Json.reads[OtpResponse]
+object PasscodeData {
+
+  implicit val reads = Json.reads[PasscodeData]
+
 }
