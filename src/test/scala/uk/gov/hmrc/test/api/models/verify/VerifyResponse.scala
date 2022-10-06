@@ -16,10 +16,4 @@
 
 package uk.gov.hmrc.test.api.models.verify
 
-import play.api.libs.json.Json
-
-case class VerifyResponse(notificationId: String)
-
-object VerifyResponse {
-  implicit val formats = Json.format[VerifyResponse]
-}
+case class VerifyResponse()
