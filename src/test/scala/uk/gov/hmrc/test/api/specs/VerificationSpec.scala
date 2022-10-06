@@ -30,7 +30,6 @@ import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 class VerificationSpec extends BaseSpec {
-
   Scenario("I wish to verify a UK mobile number and use an invalid passcode") {
     // inputs
     val phoneNumberInput = "07843274323"
@@ -66,7 +65,7 @@ class VerificationSpec extends BaseSpec {
       Await.result(resultPasscode, 50 seconds) must not be JsNull
 
       And("I get not verified status with invalid message")
-      phoneNumberErrorResponse.code shouldBe "VALIDATION_ERROR"
+      phoneNumberErrorResponse.code shouldBe 1002
       phoneNumberErrorResponse.message shouldBe "Enter a valid passcode"
     }
   }
@@ -96,9 +95,9 @@ class VerificationSpec extends BaseSpec {
     Await.result(resultPasscode, 50 seconds) must not be JsNull
 
     And("I get not verified status with invalid message")
-    verifyPasscodeResponse.status shouldBe "Not verified"
+    phoneNumberErrorResponse.code shouldBe 1002
+    phoneNumberErrorResponse.message shouldBe "Enter a valid passcode"
   }
-
   Scenario("I wish to verify a valid UK mobile number and use correct passcode") {
     val validUkMobileData = Table(
       ("0091(0)98981 220 93", "+919898122093"),
@@ -159,8 +158,8 @@ class VerificationSpec extends BaseSpec {
       Await.result(verifyResult, 50 seconds) must not be JsNull
 
       Then("I should receive a validation error")
-      phoneNumberErrorResponse.code shouldBe a[String]
-      phoneNumberErrorResponse.code shouldBe "VALIDATION_ERROR"
+      phoneNumberErrorResponse.code shouldBe a[Int]
+      phoneNumberErrorResponse.code shouldBe 1002
       phoneNumberErrorResponse.message shouldBe a[String]
       phoneNumberErrorResponse.message shouldBe "Enter a valid telephone number"
     }

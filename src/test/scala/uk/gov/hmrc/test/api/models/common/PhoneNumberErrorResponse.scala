@@ -18,7 +18,7 @@ package uk.gov.hmrc.test.api.models.common
 
 import play.api.libs.json.Json
 
-case class PhoneNumberErrorResponse(code: String, message: String)
+case class PhoneNumberErrorResponse(code: Int, message: String)
 
 object PhoneNumberErrorResponse {
   implicit val formats = Json.format[PhoneNumberErrorResponse]
