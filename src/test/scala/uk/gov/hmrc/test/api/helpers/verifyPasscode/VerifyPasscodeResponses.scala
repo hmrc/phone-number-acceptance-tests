@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.helpers.verifyOtp
+package uk.gov.hmrc.test.api.helpers.verifyPasscode
 
-import uk.gov.hmrc.test.api.models.otp.OtpResponse
+import uk.gov.hmrc.test.api.models.passcode.VerifyPasscodeResponse
 
-object OtpVerificationResponses {
-  var otpResponse: OtpResponse = _
+object VerifyPasscodeResponses {
+  var verifyPasscodeResponse: VerifyPasscodeResponse = _
 }

@@ -22,8 +22,8 @@ trait JsonRequests {
 
   val phoneNumberRequest = (phoneNumber: String) => s"""{"phoneNumber" : "$phoneNumber" }"""
 
-  val otpRequest = (phoneNumber: String, otp: String) => s"""{
+  val verifyPasscodeRequest = (phoneNumber: String, passcode: String) => s"""{
                                                |  "phoneNumber": "$phoneNumber",
-                                               |  "otp": "$otp"
+                                               |  "passcode": "$passcode"
                                                |}""".stripMargin
 }

@@ -22,9 +22,9 @@ import uk.gov.hmrc.test.api.client.HttpClient
 import uk.gov.hmrc.test.api.conf.TestConfiguration
 import uk.gov.hmrc.test.api.helpers.common.JsonRequests
 import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponseHeaders}
-import uk.gov.hmrc.test.api.helpers.verifyOtp.OtpVerificationResponses.otpResponse
+import uk.gov.hmrc.test.api.helpers.verifyPasscode.VerifyPasscodeResponses.verifyPasscodeResponse
 import uk.gov.hmrc.test.api.models.common.PhoneNumberErrorResponse
-import uk.gov.hmrc.test.api.models.otp.OtpResponse
+import uk.gov.hmrc.test.api.models.passcode.VerifyPasscodeResponse
 import uk.gov.hmrc.test.api.models.verify.IndeterminateResponse
 
 import scala.concurrent.Future
@@ -58,14 +58,14 @@ object VerificationRequests extends HttpClient with JsonRequests {
         Future.failed(new Exception(err))
     }
 
-  def callVerifyOtpEndpoint(jsonBody: String, headers: (String, String) = headers): Future[JsValue] =
-    post(s"$urlVerification$pathPrefix/verify/otp", jsonBody, headers)
+  def callVerifyPasscodeEndpoint(jsonBody: String, headers: (String, String) = headers): Future[JsValue] =
+    post(s"$urlVerification$pathPrefix/verify/passcode", jsonBody, headers)
       .collect {
         case r: StandaloneWSResponse if r.status >= 200 && r.status < 300 =>
           val jsonResp = Json.parse(r.body)
           Try {
-            otpResponse = jsonResp.as[OtpResponse]
-          } recover { case _: Exception => println("could not parse verify otp response") }
+            verifyPasscodeResponse = jsonResp.as[VerifyPasscodeResponse]
+          } recover { case _: Exception => println("could not parse verify passcode response") }
           jsonResp
         case r: StandaloneWSResponse =>
           val jsonResp = Json.parse(r.body)
