@@ -20,10 +20,16 @@ trait JsonRequests {
   val headers = ("content-type" -> "application/json")
   val pathPrefix = "/customer-insight-platform/phone-number"
 
-  val phoneNumberRequest = (phoneNumber: String) => s"""{"phoneNumber" : "$phoneNumber" }"""
+  val verifyRequest = (phoneNumber: String) =>
+    s"""
+       |{"phoneNumber" : "$phoneNumber" }
+    """.stripMargin
 
-  val verifyPasscodeRequest = (phoneNumber: String, passcode: String) => s"""{
-                                               |  "phoneNumber": "$phoneNumber",
-                                               |  "passcode": "$passcode"
-                                               |}""".stripMargin
+  val verifyPasscodeRequest = (phoneNumber: String, passcode: String) =>
+    s"""
+       |{
+       |  "phoneNumber": "$phoneNumber",
+       |  "passcode": "$passcode"
+       |}
+    """.stripMargin
 }

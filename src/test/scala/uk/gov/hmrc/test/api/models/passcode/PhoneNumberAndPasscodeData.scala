@@ -18,10 +18,9 @@ package uk.gov.hmrc.test.api.models.passcode
 
 import play.api.libs.json.Json
 
-case class PasscodeData(phoneNumber: String, passcode: String)
+case class PhoneNumberAndPasscodeData(phoneNumber: String, passcode: String)
 
-object PasscodeData {
+object PhoneNumberAndPasscodeData {
 
-  implicit val reads = Json.reads[PasscodeData]
-
+  implicit val reads = Json.reads[PhoneNumberAndPasscodeData]
 }
