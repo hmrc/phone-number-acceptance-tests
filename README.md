@@ -36,6 +36,4 @@ https://github.com/hmrc/dast-config-manager/#running-zap-locally has more inform
 
 `./run_zap_tests_local.sh`
 
-***Note:** Results of your ZAP run will not be placed in your target directory until you have run `./run-local-zap-container.sh --stop`*
-
-***Note:** `./run-local-zap-container.sh` should **NOT** be used when running in a CI environment!*
+***Note:** `./run_zap_tests_local.sh` should **NOT** be used when running in a CI environment!*

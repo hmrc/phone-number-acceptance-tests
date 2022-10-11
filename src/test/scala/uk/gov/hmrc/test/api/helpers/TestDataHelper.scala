@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.helpers.common
+package uk.gov.hmrc.test.api.helpers
 
 import uk.gov.hmrc.mongo.CurrentTimestampSupport
 import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.test.api.models.passcode.PhoneNumberAndPasscodeData
+import uk.gov.hmrc.test.api.models.PhoneNumberAndPasscodeData
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
-class PasscodeHelper extends MongoSupport {
-
+class TestDataHelper extends MongoSupport {
   override def databaseName: String = "cip-phone-number-verification"
 
   val repository = new MongoCacheRepository(
@@ -37,7 +36,8 @@ class PasscodeHelper extends MongoSupport {
     cacheIdType = CacheIdType.SimpleCacheId
   )
 
-  def getPasscodeForPhoneNumber(phoneNumber: String): Future[Option[PhoneNumberAndPasscodeData]] = {
-    repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("cip-phone-number-verification"))
+  def getPasscodeForPhoneNumber(phoneNumber: String): Option[PhoneNumberAndPasscodeData] = {
+    Await.result(
+      repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("cip-phone-number-verification")), 10.seconds)
   }
 }

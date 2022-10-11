@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.models.passcode
+package uk.gov.hmrc.test.api.models
 
 import play.api.libs.json.Json
 
 case class PhoneNumberAndPasscodeData(phoneNumber: String, passcode: String)
 
 object PhoneNumberAndPasscodeData {
-
   implicit val reads = Json.reads[PhoneNumberAndPasscodeData]
 }

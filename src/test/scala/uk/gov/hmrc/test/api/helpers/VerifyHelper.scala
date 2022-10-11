@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.test.api.models.verify
+package uk.gov.hmrc.test.api.helpers
 
-import play.api.libs.json.Json
+import play.api.libs.ws.StandaloneWSResponse
+import uk.gov.hmrc.test.api.service.VerifyService
 
-case class IndeterminateResponse(status: String, message: String)
+class VerifyHelper {
+  val verifyMatchingServiceAPI: VerifyService = new VerifyService
 
-object IndeterminateResponse {
-  implicit val formats = Json.format[IndeterminateResponse]
+  def verify(phoneNumber: String): StandaloneWSResponse = {
+    verifyMatchingServiceAPI.verify(phoneNumber)
+  }
+
+  def verifyPasscode(phoneNumber: String, passcode: String): StandaloneWSResponse = {
+    verifyMatchingServiceAPI.verifyPasscode(phoneNumber, passcode)
+  }
+
 }
