@@ -16,24 +16,14 @@
 
 package uk.gov.hmrc.test.api.specs
 
-import org.scalatest.concurrent.ScalaFutures.convertScalaFuture
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.prop.TableDrivenPropertyChecks._
-import play.api.libs.json.JsNull
-import uk.gov.hmrc.test.api.helpers.requests.VerificationRequests.{callVerifyEndpoint, callVerifyPasscodeEndpoint, verifyPasscodeRequest, verifyRequest}
-import uk.gov.hmrc.test.api.helpers.verify.VerificationResponses.{indeterminateResponse, phoneNumberErrorResponse, verifyResponseHeaders}
-import uk.gov.hmrc.test.api.helpers.verifyPasscode.VerifyPasscodeResponses.verifyPasscodeResponse
-import uk.gov.hmrc.test.api.models.passcode.PhoneNumberAndPasscodeData
-
-import scala.concurrent.Await.result
-import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, Future}
-import scala.language.postfixOps
+import play.api.libs.json.JsValue
+import play.api.libs.ws.JsonBodyReadables.readableAsJson
 
 class VerificationSpec extends BaseSpec {
   Scenario("I wish to verify a UK mobile number and use an invalid passcode") {
     // inputs
-    val phoneNumberInput = "07843274323"
+    val phoneNumber = "07843274323"
     // expected
     val normalisedPhoneNumber = "+447843274323"
 
@@ -46,60 +36,47 @@ class VerificationSpec extends BaseSpec {
       " " // empty
     )
 
-    forAll(invalidPasscodes) { passcodeInput =>
+    forAll(invalidPasscodes) { passcode =>
       Given("I have a valid mobile number")
-      val phoneNumber = phoneNumberInput
-
       When("I validate it against the verification service")
-      val verifyRequestJson = verifyRequest(phoneNumber)
-      val verifyResponse: Future[Any] = callVerifyEndpoint(verifyRequestJson)
-      Await.result(verifyResponse, 50 seconds) must not be JsNull
+      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive a notification Id")
-      verifyResponseHeaders("Location").head shouldBe a[String]
+      verifyResponse.header("Location").head shouldBe a[String]
 
       And("Once I receive the correct passcode on my mobile and ignore it")
 
       When("I verify incorrect passcode")
 
-      val verifyPasscodeRequestJson = verifyPasscodeRequest(normalisedPhoneNumber, passcodeInput)
-      result(callVerifyPasscodeEndpoint(verifyPasscodeRequestJson), 50 seconds) must not be JsNull
+      val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, passcode)
 
-      And("I get not verified status with invalid message")
-      phoneNumberErrorResponse.code shouldBe 1002
-      phoneNumberErrorResponse.message shouldBe "Enter a valid passcode"
+      And("I get an error response")
+      (verifyPasscodeResponse.body[JsValue] \ "code").as[Int] shouldBe 1002
+      (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid passcode"
     }
   }
 
   Scenario("I wish to verify a UK mobile number and use an incorrect passcode") {
     // inputs
-    val phoneNumberInput = "07843274323"
+    val phoneNumber = "07843274323"
     // expected
     val normalisedPhoneNumber = "+447843274323"
 
     Given("I have a valid mobile number")
-    val phoneNumber = phoneNumberInput
-
     When("I validate it against the verification service")
-    val verifyRequestJson = verifyRequest(phoneNumber)
-    val verifyResponse: Future[Any] = callVerifyEndpoint(verifyRequestJson)
-    Await.result(verifyResponse, 50 seconds) must not be JsNull
+    val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
     Then("I should receive a notification Id")
-    verifyResponseHeaders("Location").head shouldBe a[String]
+    verifyResponse.header("Location").head shouldBe a[String]
 
     And("Once I receive the correct passcode on my mobile and ignore it")
-
     When("I verify incorrect passcode")
+    val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, "123456")
 
-    val verifyPasscodeRequestJson = verifyPasscodeRequest(normalisedPhoneNumber, "123456")
-    callVerifyPasscodeEndpoint(verifyPasscodeRequestJson)
-    result(callVerifyPasscodeEndpoint(verifyPasscodeRequestJson), 50 seconds) must not be JsNull
-
-    And("I get not verified status with invalid message")
-    phoneNumberErrorResponse.code shouldBe 1002
-    phoneNumberErrorResponse.message shouldBe "Enter a valid passcode"
+    And("I get a not verified response")
+    (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "Not verified"
   }
+
   Scenario("I wish to verify a valid UK mobile number and use correct passcode") {
     val validUkMobileData = Table(
       ("0091(0)98981 220 93", "+919898122093"),
@@ -109,33 +86,23 @@ class VerificationSpec extends BaseSpec {
       ("+0044(0)791.220-4199", "+447912204199")
     )
 
-    forAll(validUkMobileData) { (phoneNumberInput, normalisedPhoneNumber) =>
+    forAll(validUkMobileData) { (phoneNumber, normalisedPhoneNumber) =>
       Given("I have a valid mobile number")
-      val phoneNumber = phoneNumberInput
-
       When("I verify it against the verification service")
-      val verifyRequestJson = verifyRequest(phoneNumber)
-      val verifyResponse: Future[Any] = callVerifyEndpoint(verifyRequestJson)
-      Await.result(verifyResponse, 50 seconds) must not be JsNull
+      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive a notification Id")
-      verifyResponseHeaders("Location").head shouldBe a[String]
+      verifyResponse.header("Location").head shouldBe a[String]
 
       And("Once I receive the correct passcode on my mobile")
       // retrieve the expected passcode from the stubs repo
-
-      val maybePhoneNumberAndPasscode: Option[PhoneNumberAndPasscodeData] = passcodeHelper.getPasscodeForPhoneNumber(normalisedPhoneNumber).futureValue
-      maybePhoneNumberAndPasscode must not be None
-      val passcode = maybePhoneNumberAndPasscode.get
-      maybePhoneNumberAndPasscode.get shouldBe a[PhoneNumberAndPasscodeData]
-      val expectedPasscode = passcode
+      val phoneNumberAndPasscode = testDataHelper.getPasscodeForPhoneNumber(normalisedPhoneNumber).get
 
       When("I verify correct passcode")
-      val verifyPasscodeRequestJson = verifyPasscodeRequest(phoneNumber, expectedPasscode.passcode)
-      result(callVerifyPasscodeEndpoint(verifyPasscodeRequestJson), 50 seconds) must not be JsNull
+      val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, phoneNumberAndPasscode.passcode)
 
       And("I get verified status with verified message")
-      verifyPasscodeResponse.status shouldBe "Verified"
+      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "Verified"
     }
   }
 
@@ -150,20 +117,15 @@ class VerificationSpec extends BaseSpec {
       " " // empty submission
     )
 
-    forAll(invalidPhoneNumberData) { input: String =>
+    forAll(invalidPhoneNumberData) { phoneNumber: String =>
       Given("I have a invalid phone number")
-      val phoneNumber = input
-
       When("I verify it against the verification service")
-      val verifyRequestJson = verifyRequest(phoneNumber)
-      val verifyResponse: Future[Any] = callVerifyEndpoint(verifyRequestJson)
-      Await.result(verifyResponse, 50 seconds) must not be JsNull
+      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive a validation error")
-      phoneNumberErrorResponse.code shouldBe a[Int]
-      phoneNumberErrorResponse.code shouldBe 1002
-      phoneNumberErrorResponse.message shouldBe a[String]
-      phoneNumberErrorResponse.message shouldBe "Enter a valid telephone number"
+
+      (verifyResponse.body[JsValue] \ "code").as[Int] shouldBe 1002
+      (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid telephone number"
     }
   }
 
@@ -174,20 +136,14 @@ class VerificationSpec extends BaseSpec {
       "0049(221)-5429.44 79", // Fixed-line (alphanumeric)
     )
 
-    forAll(invalidPhoneTypeData) { input: String =>
+    forAll(invalidPhoneTypeData) { phoneNumber: String =>
       Given("I have a invalid phone number type")
-      val phoneNumber = input
-
       When("I verify it against the verification service")
-      val verifyRequestJson = verifyRequest(phoneNumber)
-      val verifyResponse: Future[Any] = callVerifyEndpoint(verifyRequestJson)
-      Await.result(verifyResponse, 50 seconds) must not be JsNull
+      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive an indeterminate response")
-      indeterminateResponse.status shouldBe a[String]
-      indeterminateResponse.status shouldBe "Indeterminate"
-      indeterminateResponse.message shouldBe a[String]
-      indeterminateResponse.message shouldBe "Only mobile numbers can be verified"
+      (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "Indeterminate"
+      (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Only mobile numbers can be verified"
     }
   }
 }

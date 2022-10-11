@@ -19,9 +19,11 @@ package uk.gov.hmrc.test.api.specs
 import org.scalatest._
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import uk.gov.hmrc.test.api.helpers.common.{AuthHelper, PasscodeHelper}
+import uk.gov.hmrc.test.api.helpers.common.AuthHelper
+import uk.gov.hmrc.test.api.helpers.{TestDataHelper, VerifyHelper}
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with BeforeAndAfterAll with Matchers {
   val authHelper = new AuthHelper
-  val passcodeHelper = new PasscodeHelper
+  val testDataHelper = new TestDataHelper
+  val verifyMatchingHelper = new VerifyHelper
 }
