@@ -44,7 +44,7 @@ trait HttpClient {
   }
 
   def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] = {
-    req(url, headers: _*).get
+    req(url, headers: _*).get()
   }
 
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
