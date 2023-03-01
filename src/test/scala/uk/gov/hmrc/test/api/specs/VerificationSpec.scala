@@ -41,8 +41,8 @@ class VerificationSpec extends BaseSpec {
       When("I validate it against the verification service")
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
-      Then("I should receive a notification Id")
-      verifyResponse.header("Location").head shouldBe a[String]
+      Then("I should receive 200 status code")
+      verifyResponse.status shouldBe 200
 
       And("Once I receive the correct passcode on my mobile and ignore it")
 
@@ -51,6 +51,7 @@ class VerificationSpec extends BaseSpec {
       val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, passcode)
 
       And("I get an error response")
+      verifyPasscodeResponse.status shouldBe 400
       (verifyPasscodeResponse.body[JsValue] \ "code").as[Int] shouldBe 1002
       (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid passcode"
     }
@@ -66,14 +67,15 @@ class VerificationSpec extends BaseSpec {
     When("I validate it against the verification service")
     val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
-    Then("I should receive a notification Id")
-    verifyResponse.header("Location").head shouldBe a[String]
+    Then("I should receive 200 status code")
+    verifyResponse.status shouldBe 200
 
     And("Once I receive the correct passcode on my mobile and ignore it")
     When("I verify incorrect passcode")
     val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, "123456")
 
     And("I get a not verified response")
+    verifyPasscodeResponse.status shouldBe 200
     (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "Not verified"
   }
 
@@ -91,8 +93,8 @@ class VerificationSpec extends BaseSpec {
       When("I verify it against the verification service")
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
-      Then("I should receive a notification Id")
-      verifyResponse.header("Location").head shouldBe a[String]
+      Then("I should receive 200 status code")
+      verifyResponse.status shouldBe 200
 
       And("Once I receive the correct passcode on my mobile")
       // retrieve the expected passcode from the stubs repo
@@ -123,7 +125,7 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive a validation error")
-
+      verifyResponse.status shouldBe 400
       (verifyResponse.body[JsValue] \ "code").as[Int] shouldBe 1002
       (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid telephone number"
     }
