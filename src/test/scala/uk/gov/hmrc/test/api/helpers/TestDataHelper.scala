@@ -26,18 +26,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
 class TestDataHelper extends MongoSupport {
-  override def databaseName: String = "cip-phone-number-verification"
+  override def databaseName: String = "phone-number-verification"
 
   val repository = new MongoCacheRepository(
     mongoComponent = mongoComponent,
-    collectionName = "cip-phone-number-verification",
+    collectionName = "phone-number-verification",
     ttl = 1.minute,
     timestampSupport = new CurrentTimestampSupport(),
     cacheIdType = CacheIdType.SimpleCacheId
   )
 
   def getPasscodeForPhoneNumber(phoneNumber: String): Option[PhoneNumberAndPasscodeData] = {
-    Await.result(
-      repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("cip-phone-number-verification")), 10.seconds)
+    val phoneNumberAndPasscodeDataMaybe = Await.result(
+      repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("phone-number-verification")), 10.seconds)
+
+    phoneNumberAndPasscodeDataMaybe
   }
 }

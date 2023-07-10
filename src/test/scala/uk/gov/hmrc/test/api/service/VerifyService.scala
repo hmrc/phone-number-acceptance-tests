@@ -24,7 +24,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class VerifyService extends HttpClient {
-  private val host = TestConfiguration.url("cip-phone-number")
+  private val host = TestConfiguration.url("phone-number")
   private val contextPath = "/customer-insight-platform/phone-number"
   private val headers = Seq(("Content-Type", "application/json"), ("Accept", "application/json"), ("Authorization", "fake-token"))
 
