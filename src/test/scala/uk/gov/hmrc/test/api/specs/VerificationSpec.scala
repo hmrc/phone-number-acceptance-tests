@@ -76,7 +76,7 @@ class VerificationSpec extends BaseSpec {
 
     And("I get a not verified response")
     verifyPasscodeResponse.status shouldBe 200
-    (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "Not verified"
+    (verifyPasscodeResponse.body[JsValue] \ "code").as[String] shouldBe "Not verified"
   }
 
   Scenario("I wish to verify a valid UK mobile number and use correct passcode") {
@@ -104,7 +104,7 @@ class VerificationSpec extends BaseSpec {
       val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, phoneNumberAndPasscode.passcode)
 
       And("I get verified status with verified message")
-      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "Verified"
+      (verifyPasscodeResponse.body[JsValue] \ "code").as[String] shouldBe "Verified"
     }
   }
 
@@ -144,7 +144,7 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive an indeterminate response")
-      (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "Indeterminate"
+      (verifyResponse.body[JsValue] \ "code").as[String] shouldBe "Indeterminate"
       (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Only mobile numbers can be verified"
     }
   }

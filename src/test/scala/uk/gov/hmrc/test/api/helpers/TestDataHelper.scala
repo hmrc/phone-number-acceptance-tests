@@ -37,7 +37,9 @@ class TestDataHelper extends MongoSupport {
   )
 
   def getPasscodeForPhoneNumber(phoneNumber: String): Option[PhoneNumberAndPasscodeData] = {
-    Await.result(
+    val phoneNumberAndPasscodeDataMaybe = Await.result(
       repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("phone-number-verification")), 10.seconds)
+
+    phoneNumberAndPasscodeDataMaybe
   }
 }
