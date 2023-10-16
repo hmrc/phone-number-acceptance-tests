@@ -19,7 +19,7 @@ package uk.gov.hmrc.test.api.specs
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import play.api.libs.json.JsValue
 import play.api.libs.ws.JsonBodyReadables.readableAsJson
-
+import play.api.http.Status._
 class VerificationSpec extends BaseSpec {
   Scenario("I wish to verify a UK mobile number and use an invalid passcode") {
     // inputs
@@ -42,7 +42,7 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive 200 status code")
-      verifyResponse.status shouldBe 200
+      verifyResponse.status shouldBe OK
 
       And("Once I receive the correct passcode on my mobile and ignore it")
 
@@ -51,9 +51,9 @@ class VerificationSpec extends BaseSpec {
       val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, passcode)
 
       And("I get an error response")
-      verifyPasscodeResponse.status shouldBe 400
-      (verifyPasscodeResponse.body[JsValue] \ "code").as[Int] shouldBe 1002
-      (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid passcode"
+      verifyPasscodeResponse.status shouldBe BAD_REQUEST
+      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "VALIDATION_ERROR"
+      (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid telephone number/passcode"
     }
   }
 
@@ -68,15 +68,16 @@ class VerificationSpec extends BaseSpec {
     val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
     Then("I should receive 200 status code")
-    verifyResponse.status shouldBe 200
+    verifyResponse.status shouldBe OK
 
     And("Once I receive the correct passcode on my mobile and ignore it")
     When("I verify incorrect passcode")
     val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, "123456")
 
     And("I get a not verified response")
-    verifyPasscodeResponse.status shouldBe 200
-    (verifyPasscodeResponse.body[JsValue] \ "code").as[String] shouldBe "Not verified"
+    verifyPasscodeResponse.status shouldBe NOT_FOUND
+    (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "PASSCODE_VERIFY_FAIL"
+    (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid passcode"
   }
 
   Scenario("I wish to verify a valid UK mobile number and use correct passcode") {
@@ -94,7 +95,7 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive 200 status code")
-      verifyResponse.status shouldBe 200
+      verifyResponse.status shouldBe OK
 
       And("Once I receive the correct passcode on my mobile")
       // retrieve the expected passcode from the stubs repo
@@ -104,7 +105,7 @@ class VerificationSpec extends BaseSpec {
       val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, phoneNumberAndPasscode.passcode)
 
       And("I get verified status with verified message")
-      (verifyPasscodeResponse.body[JsValue] \ "code").as[String] shouldBe "Verified"
+      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "PASSCODE_VERIFIFIED"
     }
   }
 
@@ -125,8 +126,8 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive a validation error")
-      verifyResponse.status shouldBe 400
-      (verifyResponse.body[JsValue] \ "code").as[Int] shouldBe 1002
+      verifyResponse.status shouldBe BAD_REQUEST
+      (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "VALIDATION_ERROR"
       (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid telephone number"
     }
   }
@@ -144,7 +145,7 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
 
       Then("I should receive an indeterminate response")
-      (verifyResponse.body[JsValue] \ "code").as[String] shouldBe "Indeterminate"
+      (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "INDETERMINATE"
       (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Only mobile numbers can be verified"
     }
   }
