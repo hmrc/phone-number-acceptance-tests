@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.test.api.client
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.ahc.{AhcCurlRequestLogger, StandaloneAhcWSClient}
 import play.api.libs.ws.{DefaultWSProxyServer, StandaloneWSRequest}
@@ -31,7 +31,8 @@ trait HttpClient {
   implicit val ec: ExecutionContext = ExecutionContext.global
 
   private def req(url: String, headers: (String, String)*) = {
-    val req = wsClient.url(url)
+    val req = wsClient
+      .url(url)
       .withRequestFilter(AhcCurlRequestLogger())
       .withHttpHeaders(headers: _*)
 
@@ -43,10 +44,17 @@ trait HttpClient {
     }
   }
 
-  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] = {
+  def get(
+    url: String,
+    headers: (String, String)*
+  ): Future[StandaloneWSRequest#Self#Response] = {
     req(url, headers: _*).get()
   }
 
-  def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def post(
+    url: String,
+    bodyAsJson: String,
+    headers: (String, String)*
+  ): Future[StandaloneWSRequest#Self#Response] =
     req(url, headers: _*).post(bodyAsJson)
 }
