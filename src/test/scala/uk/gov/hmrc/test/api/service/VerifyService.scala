@@ -24,8 +24,8 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class VerifyService extends HttpClient {
-  private val host = TestConfiguration.url("phone-number")
-  private val contextPath = "/phone-number"
+  private val host = TestConfiguration.url("phone-number-gateway")
+  private val contextPath = "/phone-number-gateway"
   private val headers = Seq(("Content-Type", "application/json"), ("Accept", "application/json"), ("Authorization", "fake-token"))
 
   def verify(phoneNumber: String): StandaloneWSResponse = {
