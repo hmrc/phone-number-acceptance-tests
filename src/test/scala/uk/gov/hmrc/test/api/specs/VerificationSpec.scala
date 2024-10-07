@@ -76,7 +76,7 @@ class VerificationSpec extends BaseSpec {
 
     And("I get a not verified response")
     verifyPasscodeResponse.status shouldBe NOT_FOUND
-    (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "PASSCODE_VERIFY_FAIL"
+    (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "CODE_VERIFY_FAILURE"
     (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid passcode"
   }
 
@@ -105,7 +105,7 @@ class VerificationSpec extends BaseSpec {
       val verifyPasscodeResponse = verifyMatchingHelper.verifyCode(normalisedPhoneNumber, phoneNumberAndPasscode.verificationCode)
 
       And("I get verified status with verified message")
-      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "PASSCODE_VERIFIFIED"
+      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "CODE_VERIFIFIED"
     }
   }
 
