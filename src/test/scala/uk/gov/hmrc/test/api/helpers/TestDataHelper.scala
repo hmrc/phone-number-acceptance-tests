@@ -19,7 +19,7 @@ package uk.gov.hmrc.test.api.helpers
 import uk.gov.hmrc.mongo.CurrentTimestampSupport
 import uk.gov.hmrc.mongo.cache.{CacheIdType, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.test.MongoSupport
-import uk.gov.hmrc.test.api.models.PhoneNumberAndPasscodeData
+import uk.gov.hmrc.test.api.models.PhoneNumberAndVerificationCodeData
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,9 +36,9 @@ class TestDataHelper extends MongoSupport {
     cacheIdType = CacheIdType.SimpleCacheId
   )
 
-  def getPasscodeForPhoneNumber(phoneNumber: String): Option[PhoneNumberAndPasscodeData] = {
+  def getPasscodeForPhoneNumber(phoneNumber: String): Option[PhoneNumberAndVerificationCodeData] = {
     val phoneNumberAndPasscodeDataMaybe = Await.result(
-      repository.get[PhoneNumberAndPasscodeData](phoneNumber)(DataKey("phone-number-verification")), 10.seconds)
+      repository.get[PhoneNumberAndVerificationCodeData](phoneNumber)(DataKey("phone-number-verification")), 10.seconds)
 
     phoneNumberAndPasscodeDataMaybe
   }

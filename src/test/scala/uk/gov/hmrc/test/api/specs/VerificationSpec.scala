@@ -39,7 +39,7 @@ class VerificationSpec extends BaseSpec {
     forAll(invalidPasscodes) { passcode =>
       Given("I have a valid mobile number")
       When("I validate it against the verification service")
-      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
+      val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
 
       Then("I should receive 200 status code")
       verifyResponse.status shouldBe OK
@@ -48,7 +48,7 @@ class VerificationSpec extends BaseSpec {
 
       When("I verify incorrect passcode")
 
-      val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, passcode)
+      val verifyPasscodeResponse = verifyMatchingHelper.verifyCode(normalisedPhoneNumber, passcode)
 
       And("I get an error response")
       verifyPasscodeResponse.status shouldBe BAD_REQUEST
@@ -65,14 +65,14 @@ class VerificationSpec extends BaseSpec {
 
     Given("I have a valid mobile number")
     When("I validate it against the verification service")
-    val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
+    val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
 
     Then("I should receive 200 status code")
     verifyResponse.status shouldBe OK
 
     And("Once I receive the correct passcode on my mobile and ignore it")
     When("I verify incorrect passcode")
-    val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, "123456")
+    val verifyPasscodeResponse = verifyMatchingHelper.verifyCode(normalisedPhoneNumber, "123456")
 
     And("I get a not verified response")
     verifyPasscodeResponse.status shouldBe NOT_FOUND
@@ -92,7 +92,7 @@ class VerificationSpec extends BaseSpec {
     forAll(validUkMobileData) { (phoneNumber, normalisedPhoneNumber) =>
       Given("I have a valid mobile number")
       When("I verify it against the verification service")
-      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
+      val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
 
       Then("I should receive 200 status code")
       verifyResponse.status shouldBe OK
@@ -102,7 +102,7 @@ class VerificationSpec extends BaseSpec {
       val phoneNumberAndPasscode = testDataHelper.getPasscodeForPhoneNumber(normalisedPhoneNumber).get
 
       When("I verify correct passcode")
-      val verifyPasscodeResponse = verifyMatchingHelper.verifyPasscode(normalisedPhoneNumber, phoneNumberAndPasscode.passcode)
+      val verifyPasscodeResponse = verifyMatchingHelper.verifyCode(normalisedPhoneNumber, phoneNumberAndPasscode.verificationCode)
 
       And("I get verified status with verified message")
       (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "PASSCODE_VERIFIFIED"
@@ -123,7 +123,7 @@ class VerificationSpec extends BaseSpec {
     forAll(invalidPhoneNumberData) { phoneNumber: String =>
       Given("I have a invalid phone number")
       When("I verify it against the verification service")
-      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
+      val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
 
       Then("I should receive a validation error")
       verifyResponse.status shouldBe BAD_REQUEST
@@ -142,7 +142,7 @@ class VerificationSpec extends BaseSpec {
     forAll(invalidPhoneTypeData) { phoneNumber: String =>
       Given("I have a invalid phone number type")
       When("I verify it against the verification service")
-      val verifyResponse = verifyMatchingHelper.verify(phoneNumber)
+      val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
 
       Then("I should receive an indeterminate response")
       (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "INDETERMINATE"
