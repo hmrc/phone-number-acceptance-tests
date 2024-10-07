@@ -26,39 +26,38 @@ import scala.concurrent.duration.DurationInt
 class VerifyService extends HttpClient {
   private val host = TestConfiguration.url("phone-number-gateway")
   private val contextPath = "/phone-number-gateway"
-  private val headers = Seq(("Content-Type", "application/json"), ("Accept", "application/json"), ("Authorization", "fake-token"))
+  private val headers = Seq(
+    ("Content-Type", "application/json"),
+    ("Accept", "application/json"),
+    ("Authorization", "fake-token")
+  )
 
-  def verify(phoneNumber: String): StandaloneWSResponse = {
+  def sendCode(phoneNumber: String): StandaloneWSResponse = {
     val payload =
       s"""
          |{"phoneNumber" : "$phoneNumber" }
       """.stripMargin
 
     Await.result(
-      post(
-        s"$host$contextPath/verify",
-        payload,
-        headers: _*
-      ),
-      10.seconds)
+      post(s"$host$contextPath/send-code", payload, headers: _*),
+      10.seconds
+    )
   }
 
-  def verifyPasscode(phoneNumber: String, passcode: String): StandaloneWSResponse = {
+  def verifyCode(phoneNumber: String,
+                 verificationCode: String): StandaloneWSResponse = {
     val payload =
       s"""
          |{
          |  "phoneNumber": "$phoneNumber",
-         |  "passcode": "$passcode"
+         |  "verificationCode": "$verificationCode"
          |}
       """.stripMargin
 
     Await.result(
-      post(
-        s"$host$contextPath/verify/passcode",
-        payload,
-        headers: _*
-      ),
-      10.seconds)
+      post(s"$host$contextPath/verify-code", payload, headers: _*),
+      10.seconds
+    )
   }
 
 }

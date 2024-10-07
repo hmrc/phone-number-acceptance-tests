@@ -22,12 +22,12 @@ import uk.gov.hmrc.test.api.service.VerifyService
 class VerifyHelper {
   val verifyMatchingServiceAPI: VerifyService = new VerifyService
 
-  def verify(phoneNumber: String): StandaloneWSResponse = {
-    verifyMatchingServiceAPI.verify(phoneNumber)
+  def sendCode(phoneNumber: String): StandaloneWSResponse = {
+    verifyMatchingServiceAPI.sendCode(phoneNumber)
   }
 
-  def verifyPasscode(phoneNumber: String, passcode: String): StandaloneWSResponse = {
-    verifyMatchingServiceAPI.verifyPasscode(phoneNumber, passcode)
+  def verifyCode(phoneNumber: String, verificationCode: String): StandaloneWSResponse = {
+    verifyMatchingServiceAPI.verifyCode(phoneNumber, verificationCode)
   }
 
 }
