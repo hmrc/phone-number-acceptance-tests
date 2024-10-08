@@ -105,7 +105,7 @@ class VerificationSpec extends BaseSpec {
       val verifyPasscodeResponse = verifyMatchingHelper.verifyCode(normalisedPhoneNumber, phoneNumberAndPasscode.verificationCode)
 
       And("I get verified status with verified message")
-      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "CODE_VERIFIFIED"
+      (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "CODE_VERIFIED"
     }
   }
 
