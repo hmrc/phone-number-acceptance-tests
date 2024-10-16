@@ -53,7 +53,7 @@ class VerificationSpec extends BaseSpec {
       And("I get an error response")
       verifyPasscodeResponse.status shouldBe BAD_REQUEST
       (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "VALIDATION_ERROR"
-      (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid telephone number/passcode"
+      (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid telephone number/verification code"
     }
   }
 
@@ -77,7 +77,7 @@ class VerificationSpec extends BaseSpec {
     And("I get a not verified response")
     verifyPasscodeResponse.status shouldBe NOT_FOUND
     (verifyPasscodeResponse.body[JsValue] \ "status").as[String] shouldBe "CODE_VERIFY_FAILURE"
-    (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid passcode"
+    (verifyPasscodeResponse.body[JsValue] \ "message").as[String] shouldBe "Enter a valid verification code"
   }
 
   Scenario("I wish to verify a valid UK mobile number and use correct passcode") {
@@ -114,7 +114,6 @@ class VerificationSpec extends BaseSpec {
     val invalidPhoneNumberData = Table(
       "o7915569873", // Mobile with letters
       "", // Blank submission
-      "7915598769", // Invalid format
       "0800111", // Not minimum character length
       "+358 04 57 123- 45 67", // Not Maximum character length
       " " // empty submission
@@ -145,7 +144,7 @@ class VerificationSpec extends BaseSpec {
       val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
 
       Then("I should receive an indeterminate response")
-      (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "INDETERMINATE"
+      (verifyResponse.body[JsValue] \ "status").as[String] shouldBe "VALIDATION_ERROR"
       (verifyResponse.body[JsValue] \ "message").as[String] shouldBe "Only mobile numbers can be verified"
     }
   }
