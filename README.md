@@ -1,5 +1,3 @@
-**This is a template README.md.  Be sure to update this with project specific content that describes your api test project.**
-
 # phone-number-acceptance-tests
 API test suite for the `<digital service name>` using ScalaTest and [play-ws](https://github.com/playframework/play-ws) client.  
 
