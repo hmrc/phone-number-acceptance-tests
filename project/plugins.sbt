@@ -4,7 +4,7 @@ resolvers += Resolver.url(
   url("https://open.artefacts.tax.service.gov.uk/ivy2")
 )(Resolver.ivyStylePatterns)
 
-addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.22.0")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+addSbtPlugin("uk.gov.hmrc"    % "sbt-auto-build"  % "3.24.0")
+addSbtPlugin("org.scalameta"  % "sbt-scalafmt"    % "2.5.2")
 
 logLevel := Level.Warn
