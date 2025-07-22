@@ -10,7 +10,7 @@ Prior to executing the tests ensure you have:
 Run the following commands to start services locally:
 
     docker run --rm -d --name mongo -d -p 27017:27017 mongo:4.0
-    sm --start PHONE_NUMBER_ALL -r --wait 100
+    sm2 --start PHONE_NUMBER_ALL
 
 Using the `--wait 100` argument ensures a health check is run on all the services started as part of the profile. `100` refers to the given number of seconds to wait for services to pass health checks.    
 
