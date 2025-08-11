@@ -16,48 +16,32 @@
 
 package uk.gov.hmrc.test.api.service
 
+import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
-import uk.gov.hmrc.test.api.client.HttpClient
+import uk.gov.hmrc.test.api.client.HttpClientHelper
 import uk.gov.hmrc.test.api.conf.TestConfiguration
 
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+class VerifyService extends HttpClientHelper {
 
-class VerifyService extends HttpClient {
-  private val host = TestConfiguration.url("phone-number-gateway")
-  private val contextPath = "/phone-number-gateway"
+  private val url = TestConfiguration.url("phone-number-gateway") + "/phone-number-gateway"
   private val headers = Seq(
-    ("Content-Type", "application/json"),
-    ("Accept", "application/json"),
-    ("Authorization", "fake-token")
+    "Content-Type" -> "application/json",
+    "Accept" -> "application/json",
+    "Authorization" -> "fake-token"
   )
 
-  def sendCode(phoneNumber: String): StandaloneWSResponse = {
-    val payload =
-      s"""
-         |{"phoneNumber" : "$phoneNumber" }
-      """.stripMargin
-
-    Await.result(
-      post(s"$host$contextPath/send-code", payload, headers: _*),
-      10.seconds
-    )
-  }
+  def sendCode(phoneNumber: String): StandaloneWSResponse =
+    post(s"$url/send-code", Json.obj("phoneNumber" -> phoneNumber), headers: _*)
 
   def verifyCode(phoneNumber: String,
-                 verificationCode: String): StandaloneWSResponse = {
-    val payload =
-      s"""
-         |{
-         |  "phoneNumber": "$phoneNumber",
-         |  "verificationCode": "$verificationCode"
-         |}
-      """.stripMargin
-
-    Await.result(
-      post(s"$host$contextPath/verify-code", payload, headers: _*),
-      10.seconds
+                 verificationCode: String): StandaloneWSResponse =
+    post(
+      s"$url/verify-code",
+      Json.obj(
+        "phoneNumber" -> phoneNumber,
+        "verificationCode" -> verificationCode
+      ),
+      headers: _*
     )
-  }
 
 }
