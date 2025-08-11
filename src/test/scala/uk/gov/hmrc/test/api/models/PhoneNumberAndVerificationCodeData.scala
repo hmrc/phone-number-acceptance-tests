@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.test.api.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Reads}
 
 case class PhoneNumberAndVerificationCodeData(phoneNumber: String, verificationCode: String)
 
 object PhoneNumberAndVerificationCodeData {
-  implicit val reads = Json.reads[PhoneNumberAndVerificationCodeData]
+  implicit val reads: Reads[PhoneNumberAndVerificationCodeData] = Json.reads[PhoneNumberAndVerificationCodeData]
 }
