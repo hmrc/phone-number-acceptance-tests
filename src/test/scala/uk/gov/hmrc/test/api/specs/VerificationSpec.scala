@@ -119,7 +119,7 @@ class VerificationSpec extends BaseSpec {
       " " // empty submission
     )
 
-    forAll(invalidPhoneNumberData) { phoneNumber: String =>
+    forAll(invalidPhoneNumberData) { (phoneNumber: String) =>
       Given("I have a invalid phone number")
       When("I verify it against the verification service")
       val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
@@ -138,7 +138,7 @@ class VerificationSpec extends BaseSpec {
       "0049(221)-5429.44 79", // Fixed-line (alphanumeric)
     )
 
-    forAll(invalidPhoneTypeData) { phoneNumber: String =>
+    forAll(invalidPhoneTypeData) { (phoneNumber: String) =>
       Given("I have a invalid phone number type")
       When("I verify it against the verification service")
       val verifyResponse = verifyMatchingHelper.sendCode(phoneNumber)
