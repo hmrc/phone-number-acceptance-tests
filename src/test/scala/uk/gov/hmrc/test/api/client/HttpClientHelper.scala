@@ -18,21 +18,26 @@ package uk.gov.hmrc.test.api.client
 
 import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.apitestrunner.http.HttpClient
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-trait HttpClientHelper extends HttpClient {
+trait HttpClientHelper extends HttpClient:
 
   private def await[T](f: => Future[T]): T = Await.result(f, 10.seconds)
 
-  def post[T](url: String, body: T, headers: (String, String)*)
-             (implicit writes: Writes[T]): StandaloneWSRequest#Self#Response =
+  def post[T](url: String, body: T, headers: (String, String)*)(implicit writes: Writes[T]): StandaloneWSResponse =
     await(
       mkRequest(url)
-        .withHttpHeaders(headers: _*)
+        .withHttpHeaders(headers*)
         .post(Json.toJson(body))
     )
-}
+
+  def get(url: String, headers: (String, String)*): StandaloneWSResponse =
+    await(
+      mkRequest(url)
+        .withHttpHeaders(headers*)
+        .get()
+    )
