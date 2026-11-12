@@ -27,7 +27,8 @@ class VerifyService extends HttpClientHelper {
   private val headers = Seq(
     "Content-Type" -> "application/json",
     "Accept" -> "application/json",
-    "Authorization" -> "fake-token"
+    "Authorization" -> "fake-token",
+    "User-Agent" -> "test-only"
   )
 
   def sendCode(phoneNumber: String): StandaloneWSResponse =
