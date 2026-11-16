@@ -36,12 +36,13 @@ class JourneySpec extends BaseSpec with JourneyTestData:
     Then("the response should be successful CREATED")
     response.status shouldBe 201
 
-    And("the response should contain a URL to the frontend journey page")
-    val responseBodyAsString: String = response.body[JsValue].as[String]
-    responseBodyAsString should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-phone-number"
+    And("the response should contain a Location header with the expected enter phone number journey start URL")
+    val locationHeader = response.header("Location")
+    locationHeader shouldBe defined
+    locationHeader.get should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-phone-number"
 
     And("the journey identifier in the redirect url should be a valid UUID")
-    persistedJourneyId = responseBodyAsString.split("/")(3)
+    persistedJourneyId = locationHeader.get.split("/")(3)
     val parsedJourneyId = UUID.fromString(persistedJourneyId)
     parsedJourneyId shouldBe a[UUID]
 
@@ -83,12 +84,13 @@ class JourneySpec extends BaseSpec with JourneyTestData:
     Then("the response should be successful CREATED")
     response.status shouldBe 201
 
-    And("the response should contain a URL to the frontend journey page")
-    val responseBodyAsString: String = response.body[JsValue].as[String]
-    responseBodyAsString should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-pass-code"
+    And("the response should contain a Location header with the expected enter phone number journey start URL")
+    val locationHeader = response.header("Location")
+    locationHeader shouldBe defined
+    locationHeader.get should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-pass-code"
 
     And("the journey identifier in the redirect url should be a valid UUID")
-    persistedJourneyId = responseBodyAsString.split("/")(3)
+    persistedJourneyId = locationHeader.get.split("/")(3)
     val parsedJourneyId = UUID.fromString(persistedJourneyId)
     parsedJourneyId shouldBe a[UUID]
 
