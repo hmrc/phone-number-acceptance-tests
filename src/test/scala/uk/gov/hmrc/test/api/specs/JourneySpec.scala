@@ -36,12 +36,13 @@ class JourneySpec extends BaseSpec with JourneyTestData:
     Then("the response should be successful CREATED")
     response.status shouldBe 201
 
-    And("the response should contain a URL to the frontend journey page")
-    val responseBodyAsString: String = response.body[JsValue].as[String]
-    responseBodyAsString should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-phone-number"
+    And("the response should contain a Location header with the expected enter phone number journey start URL")
+    val locationHeader = response.header("Location")
+    locationHeader shouldBe defined
+    locationHeader.get should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-phone-number"
 
     And("the journey identifier in the redirect url should be a valid UUID")
-    persistedJourneyId = responseBodyAsString.split("/")(3)
+    persistedJourneyId = locationHeader.get.split("/")(3)
     val parsedJourneyId = UUID.fromString(persistedJourneyId)
     parsedJourneyId shouldBe a[UUID]
 
@@ -59,12 +60,17 @@ class JourneySpec extends BaseSpec with JourneyTestData:
 
     And("the response should contain the expected journey configuration")
     val journeyConfigResponseBody: JsValue = journeyConfigResponse.body[JsValue]
-    (journeyConfigResponseBody \ "credentialId").as[String]           shouldBe "123456789"
-    (journeyConfigResponseBody \ "options" \ "serviceUrl").as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "serviceUrl").as[String]
-    (journeyConfigResponseBody \ "options" \ "completionUrl").as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "completionUrl")
+
+    (journeyConfigResponseBody \ "journeyUserAgent").as[String]               shouldBe "test-only"
+    (journeyConfigResponseBody \ "journeyConfig" \ "credentialId").as[String] shouldBe "123456789"
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "serviceUrl")
+      .as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "serviceUrl").as[String]
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "completionUrl")
+      .as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "completionUrl")
       .as[String]
-    (journeyConfigResponseBody \ "options" \ "signOutUrl").as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "signOutUrl").as[String]
-    (journeyConfigResponseBody \ "options" \ "accessibilityStatementUrl")
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "signOutUrl")
+      .as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "signOutUrl").as[String]
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "accessibilityStatementUrl")
       .as[String] shouldBe (journeyConfigWithNoPhoneNumber \ "options" \ "accessibilityStatementUrl").as[String]
 
   Scenario("Journey can be initialised with a phone number"):
@@ -78,12 +84,13 @@ class JourneySpec extends BaseSpec with JourneyTestData:
     Then("the response should be successful CREATED")
     response.status shouldBe 201
 
-    And("the response should contain a URL to the frontend journey page")
-    val responseBodyAsString: String = response.body[JsValue].as[String]
-    responseBodyAsString should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-pass-code"
+    And("the response should contain a Location header with the expected enter phone number journey start URL")
+    val locationHeader = response.header("Location")
+    locationHeader shouldBe defined
+    locationHeader.get should fullyMatch regex s"/phone-number-verification/journey/[a-f0-9\\-]+/enter-pass-code"
 
     And("the journey identifier in the redirect url should be a valid UUID")
-    persistedJourneyId = responseBodyAsString.split("/")(3)
+    persistedJourneyId = locationHeader.get.split("/")(3)
     val parsedJourneyId = UUID.fromString(persistedJourneyId)
     parsedJourneyId shouldBe a[UUID]
 
@@ -101,12 +108,17 @@ class JourneySpec extends BaseSpec with JourneyTestData:
 
     And("the response should contain the expected journey configuration")
     val journeyConfigResponseBody: JsValue = journeyConfigResponse.body[JsValue]
-    print(journeyConfigResponseBody)
-    (journeyConfigResponseBody \ "credentialId").as[String]           shouldBe "123456789"
-    (journeyConfigResponseBody \ "options" \ "serviceUrl").as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "serviceUrl").as[String]
-    (journeyConfigResponseBody \ "options" \ "completionUrl").as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "completionUrl")
+
+    (journeyConfigResponseBody \ "journeyUserAgent").as[String]               shouldBe "test-only"
+    (journeyConfigResponseBody \ "journeyConfig" \ "credentialId").as[String] shouldBe "123456789"
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "serviceUrl")
+      .as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "serviceUrl").as[String]
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "completionUrl")
+      .as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "completionUrl")
       .as[String]
-    (journeyConfigResponseBody \ "options" \ "signOutUrl").as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "signOutUrl").as[String]
-    (journeyConfigResponseBody \ "options" \ "accessibilityStatementUrl")
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "signOutUrl")
+      .as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "signOutUrl").as[String]
+    (journeyConfigResponseBody \ "journeyConfig" \ "options" \ "accessibilityStatementUrl")
       .as[String] shouldBe (journeyConfigWithPhoneNumber \ "options" \ "accessibilityStatementUrl").as[String]
-    (journeyConfigResponseBody \ "phoneNumberToVerify").as[String] shouldBe (journeyConfigWithPhoneNumber \ "phoneNumberToVerify").as[String]
+    (journeyConfigResponseBody \ "journeyConfig" \ "phoneNumberToVerify").as[String] shouldBe (journeyConfigWithPhoneNumber \ "phoneNumberToVerify")
+      .as[String]
